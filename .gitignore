@@ -3,4 +3,4 @@ doc
 tex
 src/a.out
 benchmark/a.out
-test/a.out
+debug/a.out
