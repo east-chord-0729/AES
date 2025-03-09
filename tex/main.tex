@@ -1,0 +1,171 @@
+\documentclass{article}
+
+\title{AES 규격}
+\author{김동현(wlswudpdlf31@kookmin.ac.kr)}
+\date{\today}
+
+\usepackage{style}
+
+% 한국어 지원 패키지
+\usepackage{kotex}
+
+% 알고리듬 패키지
+\usepackage{algorithm}
+\usepackage{algpseudocode} 
+
+% Document setting
+\usepackage{geometry}
+\geometry{
+	a4paper, 
+	left=3cm, right=3cm, top=2cm, bottom=2cm, 
+	includehead, includefoot}
+	\usepackage{fancyhdr} % 머리말과 꼬리말 설정 
+\usepackage{lastpage}
+\pagestyle{fancy}
+\fancyhf{} % 기존 머리말/꼬리말 초기화
+\renewcommand{\headrulewidth}{0.4pt} % 머리말 선 두께
+\fancyhead[L]{\leftmark} % 왼쪽 머리말
+\fancyhead[R]{\rightmark} % 오른쪽 머리말
+\renewcommand{\footrulewidth}{0.4pt}
+\fancyfoot[L]{FDL}
+\fancyfoot[R]{\thepage~/~\pageref{LastPage}} % 가운데 꼬리말에 페이지 번호 추가
+
+
+% 수학 관련 패키지
+\usepackage{amsmath, amssymb}
+\usepackage{amsthm}
+\usepackage{mathtools} % mathtools 패키지 필요
+\newtheorem{theorem}{정리}
+
+% 이미지 관련 패키지
+\usepackage{graphicx}
+
+% TikZ 패키지 추가
+\usepackage{tikz}
+
+% Table package and setting
+\usepackage{tcolorbox}
+\usepackage{tabularx}
+\usepackage{colortbl} % colortbl 패키지 추가
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\begin{document}
+\maketitle
+\tableofcontents
+
+\newpage
+\section{AES 규격 개요}
+
+
+\aes{128}, \aes{192} 또는 \aes{256}을 실행하는 일반적인 함수는 \cipher 로
+나타내며, 그 역함수는 \invcipher 로 표시됩니다.
+
+%TODO cipher section으로 옮기기
+\cipher 및 \invcipher 알고리즘의 핵심은 상태(state)에 대한 일정한 변환 과정인
+라운드(round)의 연속적인 수행입니다. 각 라운드는 라운드 키(round key)라고 하는
+추가 입력을 필요로 하며, 라운드 키는 일반적으로 네 개의 워드(word)로 구성된
+블록, 즉 16바이트로 표현됩니다.
+
+%TODO keyexpansion section으로 옮기기
+\keyexpansion 이라고 하는 확장 루틴(expansion routine)은 블록 암호화 키를
+입력으로 받아 라운드 키를 생성합니다. 구체적으로, **KEYEXPANSION()**의 입력은
+단어 배열(key)로 표현되며, 출력은 확장된 단어 배열(w)로 나타납니다. 이 확장된 키
+배열을 **키 스케줄(key schedule)**이라고 합니다.
+
+\aes{128}, \aes{192} 및  \aes{256} 블록 암호는 세 가지 측면에서 차이가 있습니다:
+\begin{itemize}
+    \item 키 길이
+    \item 라운드 수 (이는 필요한 키 스케줄의 크기를 결정함)
+    \item \keyexpansion 내에서의 재귀(recursion) 규격
+\end{itemize}
+
+각 알고리즘에서 라운드 수는 $\nr$, 키 길이의 워드 수는 $\nk$로 표시되고,
+블록의 워드 수는 $\nb$로 나타낸다. $\nb$, $\nk$, $\nr$ 값은 표 3에
+제시되어 있다.
+
+\begin{figure}[ht]
+    \center
+    \begin{tabular}{lccc}
+        \hline
+        \hline
+        & 블록 길이 $\nb$ & 키 길이 $\nk$ & 라운드 수 $\nr$ \\
+        \hline
+        \aes{128} & 4 (128 bits) & 4 (128 bits) & 10 \\
+        \aes{192} & 4 (128 bits) & 6 (192 bits) & 12 \\
+        \aes{256} & 4 (128 bits) & 8 (256 bits) & 14 \\
+        \hline
+        \hline
+    \end{tabular}
+\end{figure}
+
+\cipher 함수 규격은 1 절을 참고한다. \invcipher 함수 규격은 2 절을 참고한다.
+\keyexpansion 함수 규격은 3 절을 참고한다.
+
+
+\newpage
+\section{Cipher}
+
+\begin{algorithm}
+    \caption{\cipher}
+    \label{alg:example}
+    \begin{algorithmic}[1]
+    \Require $\pt, \nr, w$ \Comment{$w = \keyexpansion(\key)$}
+    \Ensure $\state$ 
+    \Procedure{Cipher}{$\pt, \nr, w$}
+    \State $\state \gets \pt$
+    \State $\state \gets \ar(\state, w_{[0:16]})$
+    \For{$i = 1$ to $\nr - 1$}
+        \State $\state \gets \sb(\state)$
+        \State $\state \gets \sr(\state)$
+        \State $\state \gets \mc(\state)$
+        \State $\state \gets \ar(\state, w_{[16i: 16(i + 1)]})$
+    \EndFor
+    \State $\state \gets \sb(\state)$
+    \State $\state \gets \sr(\state)$
+    \State $\state \gets \ar(\state, w_{[16\nr: 16(\nr + 1)]})$
+    \State \Return $\state$
+    \EndProcedure
+    \end{algorithmic}
+\end{algorithm}
+
+\cipher 의 입력은 다음과 같다:
+\begin{itemize}
+    \item 데이터 입력 $\pt$ : 16 바이트 선형 배열로 표현되는 블록
+    \item 라운드 수 $\normalbaselines$ : 해당 AES 인스턴스에 대한 라운드 수
+    \item 라운드 키
+\end{itemize}
+예를 들어, \aes{128}의 \cipher 함수는 다음과 같이 표현된다.
+$$
+    \cipher(\pt, 10, \keyexpansion(key)).
+$$
+
+\cipher 에서 라운드는 \sb, \sr, \mc, \ar \ 네 가지 바이트 단위 변환을 포함한다.
+이 네 가지 변환 규격은 하위 절에서 설명한다.
+
+첫 번째 단계(line 2)는 입력을 상태 배열(state array)에 복사하는 것이며, 이는 섹션
+3.4에서 정의된 규칙을 따릅니다. 
+초기 라운드 키 추가(3행) 후, 상태 배열은 Nr번의
+라운드 함수(round function) 변환(412행)을 거칩니다. 마지막 라운드(1012행)는
+MIXCOLUMNS() 변환이 생략된다는 점에서 이전 라운드들과 다릅니다. 
+최종 상태(final
+state)는 **출력(13행)**으로 반환되며, 이에 대한 설명은 섹션 3.4에 나와 있습니다.
+
+\subsection{SubBytes}
+
+
+\subsection{Shiftrows}
+
+
+\subsection{Mixcolumns}
+
+
+\subsection{AddRoundKey}
+
+
+\newpage
+\section{InvCipher}
+
+\newpage
+\section{KeyExpansion}
+
+\end{document}

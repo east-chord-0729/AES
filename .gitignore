@@ -1,6 +1,5 @@
 .clang-format
 doc
-tex
 src/a.out
 benchmark/a.out
 debug/a.out
