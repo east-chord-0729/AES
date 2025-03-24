@@ -3,16 +3,40 @@
 % AES functions
 \newcommand{\cipher}{\textsc{Cipher}}
 \newcommand{\invcipher}{\textsc{InvCipher}}
-\newcommand{\keyexpansion}{\textsc{KeyExpansion}}
+\newcommand{\KE}{\textsc{KeyExpansion}}
 \renewcommand{\sb}{\textsc{SubBytes}}
 \newcommand{\sr}{\textsc{ShiftRows}}
 \newcommand{\mc}{\textsc{MixColumns}}
 \newcommand{\ar}{\textsc{AddRoundKey}}
+\newcommand{\isb}{\textsc{InvSubBytes}}
+\newcommand{\isr}{\textsc{InvShiftRows}}
+\newcommand{\imc}{\textsc{InvMixColumns}}
+\newcommand{\SBox}{\textsc{SBox}} 
+\newcommand{\iSBox}{\textsc{InvSBox}}
+\newcommand{\rc}{\textsf{Rcon}}
+\newcommand{\XT}{\textsc{xTimes}}
+\newcommand{\SW}{\textsc{SubWord}}
+\newcommand{\RW}{\textsc{RotWord}}
 
 % AES parameters
-\newcommand{\nb}{N_b}
-\newcommand{\nk}{N_k}
-\newcommand{\nr}{N_r}
+\newcommand{\nb}{n_b}
+\newcommand{\nk}{n_k}
+\newcommand{\nr}{n_r}
 \newcommand{\pt}{in}
 \newcommand{\key}{key}
 \newcommand{\state}{state}
+\newcommand{\St}{S}
+\newcommand{\Rk}{R}
+\newcommand{\In}{I}
+\newcommand{\Out}{O}
+
+\newcommand{\xor}{\oplus}
+\newcommand{\Tand}{\text{ and }}
+\newcommand{\for}{\quad \text{for }}
+\newcommand{\IF}{\text{if }}
+\newcommand{\set}[1]{\{#1\}}
+\newcommand{\Mod}{\text{ mod }}
+\newcommand{\Tmod}{\text{ mod }}
+\newcommand{\hex}[1]{\texttt{0x#1}}
+\newcommand{\gf}{\mathbb{F}}
+\newcommand{\bin}[1]{\texttt{0b#1}}

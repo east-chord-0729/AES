@@ -80,6 +80,11 @@ static void shiftrows(uint8_t state[16])
     state[7]  = temp;
 }
 
+void mul_example(uint8_t b, uint8_t c)
+{
+    return xtimes(b ^ c) ^ c;
+}
+
 static void mixcolumns(uint8_t state[16])
 {
     uint8_t t[16];
@@ -113,22 +118,10 @@ static void mixcolumns(uint8_t state[16])
 
 static void addroundkey(uint8_t state[16], const uint8_t key[16])
 {
-    state[0] ^= key[0];
-    state[1] ^= key[1];
-    state[2] ^= key[2];
-    state[3] ^= key[3];
-    state[4] ^= key[4];
-    state[5] ^= key[5];
-    state[6] ^= key[6];
-    state[7] ^= key[7];
-    state[8] ^= key[8];
-    state[9] ^= key[9];
-    state[10] ^= key[10];
-    state[11] ^= key[11];
-    state[12] ^= key[12];
-    state[13] ^= key[13];
-    state[14] ^= key[14];
-    state[15] ^= key[15];
+    for(int i = 0; i < 16; i++)
+    {
+        state[i] ^= key[i];
+    }
 }
 
 void keyexpansion(uint8_t rkey[11 * 16], const uint8_t mkey[16])
